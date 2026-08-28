@@ -1,0 +1,10 @@
+{
+  "name": "aileron",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "version": "changeset version && node scripts/sync-version.mjs",
+    "release": "changeset publish"
+  },
+  "devDependencies": { "@changesets/changelog-github": "^1.0.0", "@changesets/cli": "^3.0.1" }
+}

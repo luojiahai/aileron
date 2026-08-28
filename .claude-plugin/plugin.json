@@ -3,9 +3,17 @@
   "displayName": "aileron",
   "description": "Rigorous engineering skills for Claude Code: a sticky /aileron mode with playbooks, principles, parallel arenas and swarms, interrogation panels, and verified shipping.",
   "version": "0.1.0",
-  "author": { "name": "luojiahai" },
+  "author": {
+    "name": "luojiahai"
+  },
   "homepage": "https://github.com/luojiahai/aileron",
   "repository": "https://github.com/luojiahai/aileron",
   "license": "MIT",
-  "keywords": ["engineering", "skills", "playbooks", "verification", "subagents"]
+  "keywords": [
+    "engineering",
+    "skills",
+    "playbooks",
+    "verification",
+    "subagents"
+  ]
 }

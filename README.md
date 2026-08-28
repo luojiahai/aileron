@@ -19,6 +19,10 @@ fork it. improve it. make it yours. PRs are welcome!
 
 for local development, run Claude Code from a checkout with `claude --plugin-dir .`.
 
+## release
+
+every user-facing change adds a changeset with `npx changeset`. merging to `main` opens or updates a "chore: version packages" pr. merging that pr bumps the version in `package.json` and syncs it into `.claude-plugin/plugin.json` and `.claude-plugin/marketplace.json`. it also publishes a `vX.Y.Z` tag and a github release.
+
 ## get started
 
 two steps:
