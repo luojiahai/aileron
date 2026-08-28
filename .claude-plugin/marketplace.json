@@ -8,7 +8,7 @@
     {
       "name": "aileron",
       "source": "./",
-      "description": "Rigorous engineering skills for Claude Code: a sticky /aileron mode with playbooks, principles, parallel arenas and swarms, interrogation panels, and verified shipping.",
+      "description": "Rigorous agentic engineering workflows for Claude Code.",
       "displayName": "aileron",
       "version": "0.1.1"
     }
