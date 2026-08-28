@@ -1,0 +1,16 @@
+{
+  "name": "aileron",
+  "description": "luojiahai's Claude Code plugins. Ships aileron, a rigorous engineering mode with playbooks and principles.",
+  "owner": {
+    "name": "luojiahai"
+  },
+  "plugins": [
+    {
+      "name": "aileron",
+      "source": "./",
+      "description": "Rigorous engineering skills for Claude Code: a sticky /aileron mode with playbooks, principles, parallel arenas and swarms, interrogation panels, and verified shipping.",
+      "displayName": "Aileron",
+      "version": "0.1.0"
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo 'aileron: new task? if a playbook matches or the work needs rigor, apply the /aileron skill. casual turn or user opted out? stay out of the way.'"
+          }
+        ]
+      }
+    ]
+  }
+}
