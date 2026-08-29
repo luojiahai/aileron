@@ -12,8 +12,7 @@ Here's what you'll learn:
 6. [Verify and ship](./06-verify-and-ship.md). Prove behavior on the real app, then open a focused PR and drive it to merged.
 7. [Run work while you sleep](./07-overnight.md). An overnight contract, a decision log you can audit, and the playbooks that scale past one agent.
 8. [Steer with principle names](./08-principles.md). The 21 names that redirect an agent mid-task.
-9. [Extend the skills](./09-extend-the-skills.md). Capture lessons, author a skill, and test a skill change.
-10. [Recipes and pitfalls](./10-recipes-and-pitfalls.md). Prompts to copy and mistakes to skip.
+9. [Recipes and pitfalls](./09-recipes-and-pitfalls.md). Prompts to copy and mistakes to skip.
 
 Read the pages in order the first time. After that, each page stands alone.
 

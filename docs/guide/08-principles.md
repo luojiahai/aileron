@@ -66,4 +66,4 @@ And one meta principle:
 
 Don't memorize the list. Skim it now, then come back when you catch the agent doing something a name here would have prevented. That's how the vocabulary sticks.
 
-Next: [Extend the skills](./09-extend-the-skills.md).
+Next: [Recipes and pitfalls](./09-recipes-and-pitfalls.md).
