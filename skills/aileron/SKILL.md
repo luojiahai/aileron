@@ -23,7 +23,7 @@ Remaining triggers:
 - Parallel fan-out → the **swarm** skill for coverage matrices, races, gauntlets, and exploration partitions. Use **arena** for design or code bakeoffs with base selection and grafting.
 - Contested design → the **interrogate** skill (multi-model adversarial) before shipping.
 - Nontrivial multi-step → write the throughput checkpoint (Feature step 3).
-- Any prose surface → the **unslop** skill. Your reply is a prose surface; write it per **Writing the reply**. Agent-facing prose also follows the Authoring a skill playbook (`playbooks/authoring-a-skill.md`).
+- Any prose surface → the **unslop** skill. Your reply is a prose surface; write it per **Writing the reply**.
 - Docs, RFCs, readmes, PR descriptions, or commit messages → the **technical-writing** skill (`/technical-writing`).
 - Before commit → the **unslop** skill on the diff's prose and the **no-comments** skill on its comments.
 - Before review → the **no-comments** skill (`/no-comments`).
@@ -31,7 +31,6 @@ Remaining triggers:
 - Any PR-status request → the **Babysit** playbook (`playbooks/babysit.md`). That includes "babysit this", "get it green", "address the bot review comments", and the commonest phrasing, "check on PR X" / "anything outstanding on X". Never triggered by merely opening a PR. Declare its mode before polling; the playbook's step 1 owns the request-to-mode mapping. Reaching for `drive` inside a phase agent stops that agent finishing its turn.
 - Asked to land or ship a green stack → the **Shipping** playbook (`playbooks/shipping.md`). Green is not safe. Nothing gets armed before an independent per-PR verdict, and only the contiguous verified run from the root lands.
 - A bot reviewer (Claude code review, CodeRabbit, an agentic security review) commented → skeptical posture. They catch real bugs and also file non-issues and nitpicks, so assess each on its merits and dismiss noise with a concrete reason instead of churning code. Triage fix / dismiss / ask per `references/bot-review-triage.md`.
-- Broken skill mid-task → fix it in its own PR. Don't block. Don't silently work around it.
 - Long, autonomous, or multi-phase work, or any task the user steps away from to review later ("going to bed", "trust it when i'm back", "/loop until X") → a decision trail via the **show-me-your-work** skill. Commit it when stakes need an auditable record; keep it local otherwise.
 
 ## Principles
@@ -86,9 +85,9 @@ Read the leaf skill in full for any principle you apply. Each entry names when i
 
 ## Subagents
 
-**Use `subagent_type: "aileron-agent"` for any subagent you spawn inside a playbook step** (code-writing delegates, ad-hoc helpers). `/aileron` and `aileron-agent` route through the same wrapper. Routed workflow skills (`how`, `why`, `interrogate`, `reflect`, `swarm`) set their own `subagent_type` for diverse review; respect what the skill prescribes, don't override to `aileron-agent`. Read-only exploration goes to `Explore`; anything else generic goes to `general-purpose`.
+**Use `subagent_type: "aileron-agent"` for any subagent you spawn inside a playbook step** (code-writing delegates, ad-hoc helpers). `/aileron` and `aileron-agent` route through the same wrapper. Routed workflow skills (`how`, `why`, `interrogate`, `swarm`) set their own `subagent_type` for diverse review; respect what the skill prescribes, don't override to `aileron-agent`. Read-only exploration goes to `Explore`; anything else generic goes to `general-purpose`.
 
-**Defaults for every Agent call.** `run_in_background: true`, file pointers not inlined context, `isolation: worktree` when the delegate edits files in parallel with others, explicit model per role. Roles and their defaults live in `~/.claude/aileron-models.md`, written by `/setup-aileron`; the built-in defaults are `opus` for code, `fable` for prose and judgment, `sonnet` for bulk mechanical work. Code delegates tier by difficulty. The hardest changes (cross-cutting design, gnarly concurrency, subtle algorithms) go to the judgment model (`fable`) when the task needs judgment or the intent is vague, and to the code model (`opus`) when the work is a precisely specified sequence of steps to execute to the letter; trivial mechanical edits go to the bulk model (`sonnet`). Per-role lines in the models file override these defaults and the model choices in the routed skills (`how`, `why`, `arena`, `swarm`, `architect`, `interrogate`, `reflect`); a role with no line keeps its default, and a role line of `inherit` runs that role on the parent session model (omit `model`).
+**Defaults for every Agent call.** `run_in_background: true`, file pointers not inlined context, `isolation: worktree` when the delegate edits files in parallel with others, explicit model per role. Roles and their defaults live in `~/.claude/aileron-models.md`, written by `/setup-aileron`; the built-in defaults are `opus` for code, `fable` for prose and judgment, `sonnet` for bulk mechanical work. Code delegates tier by difficulty. The hardest changes (cross-cutting design, gnarly concurrency, subtle algorithms) go to the judgment model (`fable`) when the task needs judgment or the intent is vague, and to the code model (`opus`) when the work is a precisely specified sequence of steps to execute to the letter; trivial mechanical edits go to the bulk model (`sonnet`). Per-role lines in the models file override these defaults and the model choices in the routed skills (`how`, `why`, `arena`, `swarm`, `architect`, `interrogate`); a role with no line keeps its default, and a role line of `inherit` runs that role on the parent session model (omit `model`).
 
 You own every subagent's work. Review the diff and write your own summary, don't pass through what it said. Interrupt-chained resumes silently drop directives, so fire a fresh subagent with consolidated scope rather than trusting a "done" summary. A second opinion is the same prompt against a different model tier or a different lens. Agreement is high-signal.
 
@@ -125,8 +124,6 @@ A large or cross-cutting effort (a migration across many call sites, an ambitiou
 - **Refactoring.** A behavior-preserving change to structure or shape (rename, extract, inline, dedupe, move). `playbooks/refactoring.md`.
 - **Prototype.** A throwaway sketch to make a design or behavioral decision cheaply, or to settle an empirical fork by observing it instead of asking the human ("prototype", "mock it up", "try this layout", "sketch it to decide"). `playbooks/prototype.md`.
 - **Visual parity.** Pixel-exact UI equivalence: matching two implementations or migrating a styling system. `playbooks/visual-parity.md`.
-- **Authoring or modifying a skill.** Writing or editing a SKILL.md. `playbooks/authoring-a-skill.md`.
-- **Eval.** Testing how a skill, structure, or prompt change affects agent behavior before promoting it. `playbooks/eval.md`.
 - **Babysit.** Driving a PR or a stack to merge-ready: conflicts, review threads, CI. `playbooks/babysit.md`.
 - **Shipping.** The half after Babysit. Independently verifying a green stack, then landing the contiguous verified run with Graphite merge-when-ready. `playbooks/shipping.md`.
 - **Autonomous run.** A long task to drive to completion without stopping ("run until done", "/loop until X"). `playbooks/autonomous-run.md`.

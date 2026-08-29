@@ -8,7 +8,7 @@ There's a growing sense that AI writes too much slop code. Throughput without qu
 
 **aileron is a sticky mode.** Once entered it stays on across turns, applying itself when a playbook matches or the task needs rigor and staying out of the way otherwise. Opt out any time by saying so.
 
-Fork it. Improve it. Make it yours. PRs are welcome!
+PRs are welcome!
 
 ## Install
 
@@ -67,8 +67,6 @@ morning.
 | [Refactoring](./skills/aileron/playbooks/refactoring.md) | A behavior-preserving change to structure or shape. |
 | [Prototype](./skills/aileron/playbooks/prototype.md) | A throwaway sketch to make a design or behavioral decision cheaply, or to settle an empirical fork by observing it. |
 | [Visual parity](./skills/aileron/playbooks/visual-parity.md) | Pixel-exact UI equivalence between two implementations. |
-| [Authoring a skill](./skills/aileron/playbooks/authoring-a-skill.md) | Writing or editing a SKILL.md. |
-| [Eval](./skills/aileron/playbooks/eval.md) | Test how a skill or prompt change affects agent behavior, blinded. |
 | [Babysit](./skills/aileron/playbooks/babysit.md) | Drive a PR or a stack to merge-ready. Conflicts, review threads, CI. |
 | [Shipping](./skills/aileron/playbooks/shipping.md) | Independently verify a green stack, then land the contiguous verified run with Graphite merge-when-ready. |
 | [Autonomous run](./skills/aileron/playbooks/autonomous-run.md) | Drive a long task to completion without stopping. |
@@ -126,7 +124,6 @@ Every skill is also reachable with the plugin prefix, as `/aileron:<skill>`, whe
 | [`/swarm`](./skills/swarm/SKILL.md) | You want N parallel workers across different slices or races, then one aggregated report. |
 | [`/interrogate`](./skills/interrogate/SKILL.md) | You have a diff and want several reviewers with distinct lenses to try to break it, including a strict code-quality lens. |
 | [`/setup-aileron`](./skills/setup-aileron/SKILL.md) | You want to pick which models aileron uses per role. Writes `~/.claude/aileron-models.md`. |
-| [`/reflect`](./skills/reflect/SKILL.md) | A long task landed and you want the recipe captured as a skill edit. |
 | [`/teach`](./skills/teach/SKILL.md) | You want to actually understand a change or subsystem, not just have it summarized. Runs how + why and weaves one plain explanation, built up diagram by diagram. |
 | [`/tdd`](./skills/tdd/SKILL.md) | You're fixing a bug and there's a cheap local test path. Write the failing test first, then the fix. |
 | [`/no-comments`](./skills/no-comments/SKILL.md) | Strip comments before review; spawns Comment Sicko, fixes accepted findings, offers encodings for claimed constraints. |
@@ -177,8 +174,6 @@ swarm:             /swarm check every package under packages/ against its check.
 interrogate:       /interrogate review this pr.
 tdd:               /tdd implement
 unslop:            can we unslop and tighten the new changes?
-reflect:           /reflect that took too long. capture what we learned so the next run doesn't
-                   repeat it.
 show-me-your-work: /show-me-your-work keep a decision trail i can review when i'm back.
 ```
 

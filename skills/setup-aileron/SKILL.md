@@ -27,7 +27,6 @@ Use `AskUserQuestion`, one question per role group, with the current value prese
 - Playbook delegates: `feature, refactoring`, `bug-fix`, `perf-issue`, `hillclimb`.
 - `how`: `how explorer`, `how explainer`.
 - `why`: `why investigators`, `why synthesizer`.
-- `reflect`: `reflect tooling`, `reflect judgment, divergent, synthesizer`.
 - Panels: `how critics`, `arena runners`, `arena cross-judge pool`, `architect runners`, `interrogate reviewers`.
 - `swarm workers`.
 
@@ -58,8 +57,6 @@ how explainer: fable
 how critics: fable, opus, sonnet
 why investigators: sonnet
 why synthesizer: fable
-reflect tooling: opus
-reflect judgment, divergent, synthesizer: fable
 arena runners: fable, opus, sonnet
 arena cross-judge pool: fable, opus, sonnet
 swarm workers: sonnet
