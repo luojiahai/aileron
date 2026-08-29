@@ -125,7 +125,6 @@ Every skill is also reachable with the plugin prefix, as `/aileron:<skill>`, whe
 | [`/arena`](./skills/arena/SKILL.md) | You want N parallel attempts at the same thing, then to grab the best parts of each. |
 | [`/swarm`](./skills/swarm/SKILL.md) | You want N parallel workers across different slices or races, then one aggregated report. |
 | [`/interrogate`](./skills/interrogate/SKILL.md) | You have a diff and want several reviewers with distinct lenses to try to break it, including a strict code-quality lens. |
-| [`/automate-me`](./skills/automate-me/SKILL.md) | You want your own `-mode` skill, drafted from how you've actually worked. |
 | [`/setup-aileron`](./skills/setup-aileron/SKILL.md) | You want to pick which models aileron uses per role. Writes `~/.claude/aileron-models.md`. |
 | [`/reflect`](./skills/reflect/SKILL.md) | A long task landed and you want the recipe captured as a skill edit. |
 | [`/teach`](./skills/teach/SKILL.md) | You want to actually understand a change or subsystem, not just have it summarized. Runs how + why and weaves one plain explanation, built up diagram by diagram. |
@@ -181,7 +180,6 @@ unslop:            can we unslop and tighten the new changes?
 reflect:           /reflect that took too long. capture what we learned so the next run doesn't
                    repeat it.
 show-me-your-work: /show-me-your-work keep a decision trail i can review when i'm back.
-automate-me:       /automate-me
 ```
 
 </details>
@@ -226,12 +224,6 @@ Twenty-one short skills, one principle each. `aileron` indexes them inline and r
 | [encode-lessons-in-structure](./skills/principle-encode-lessons-in-structure/SKILL.md) | Meta | Encode the rule as a lint, metadata flag, runtime check, or script instead of more text. |
 
 </details>
-
-## Make it yours
-
-`aileron` is one style. You may not want exactly that.
-
-Type [`/automate-me`](./skills/automate-me/SKILL.md). It mines your recent transcripts, drafts a `<your-name>-mode` skill from how you've actually worked, and routes through aileron underneath. It writes the skill to `~/.claude/skills/<your-name>-mode/SKILL.md`, so you keep aileron as the base and end up with your own routing skill alongside `/aileron`.
 
 ## Models
 
