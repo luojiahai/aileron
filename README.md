@@ -250,7 +250,7 @@ Valid values are `fable`, `opus`, `sonnet`, `haiku`, and `inherit`. A role set t
 
 ## Credits
 
-aileron is a fork of poteto's [pstack](https://github.com/poteto/pstack), adapted and extended for Claude Code. MIT.
+aileron is a fork of poteto's [pstack](https://github.com/cursor/plugins/tree/main/pstack), adapted and extended for Claude Code. MIT.
 
 ## License
 
