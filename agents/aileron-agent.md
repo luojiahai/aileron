@@ -2,8 +2,6 @@
 name: aileron-agent
 description: Delegate subagent for code-writing and helper tasks spawned during an `/aileron` run. Use for delegates, not as the runner for `/aileron` itself. Spawn a fresh `aileron-agent` for each new task, and resume one only in the strict cases that aileron's Subagents section names. Reads the `aileron` skill in full before any work, including its inline Principles index. Substituting `general-purpose` skips that read and drifts.
 model: inherit
-skills:
-  - aileron
 color: yellow
 ---
 
