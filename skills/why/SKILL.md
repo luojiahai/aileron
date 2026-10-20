@@ -7,7 +7,7 @@ description: "Use for 'why does X work this way', 'why we picked Y', design rati
 
 Investigate the motivation and intent behind code. The companion `how` skill answers what the code does and how it works. `why` answers what forces led to its shape.
 
-Each spawn below names a role line in `~/.claude/aileron-models.md` and a default. Set `model` to that line's value, or to the default if the file or the line is missing. Leave `model` unset when the value is `inherit`. If the Agent tool rejects the value, use the default and say so. Set `effort` on each Agent call from the role's line in the models file, as the Subagents section of the **aileron** skill describes.
+Each spawn below names a role line in `~/.claude/aileron-models.md` and a default. Set `model` to the entry's tier (the part before any `@`), or to the default if the file or the line is missing. Leave `model` unset when the tier is `inherit`. If the Agent tool rejects the value, use the default and say so. Set `effort` on each Agent call from the role's entry in the models file, matched to the job, per the Subagents section of the **aileron** skill.
 
 Every spawn is `general-purpose` with `run_in_background: true`. The MCP-backed investigators and the synthesizer's citation spot-checks need MCP access. Investigators still shouldn't write anything. That's a posture, not a sandbox.
 

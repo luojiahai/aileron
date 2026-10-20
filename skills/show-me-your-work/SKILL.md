@@ -64,7 +64,7 @@ Correct the log, not the story. The audit never edits or removes a row, even an 
 
 ## Independent review of the trail
 
-Before handing back, spawn a fresh subagent to review the trail, on a different model tier from the one that did the work when the models file allows it. Self-review is not a substitute. The subagent reads the audit trail and the run's transcript, then flags what the user should pay attention to. Not a redo of the work, a scan for what's suboptimal or risky. Pick each subagent's reasoning level and fast or standard speed for the job, per the Subagents section of the **aileron** skill.
+Before handing back, spawn a fresh subagent to review the trail, on a different model tier from the one that did the work when the models file allows it. Self-review is not a substitute. The subagent reads the audit trail and the run's transcript, then flags what the user should pay attention to. Not a redo of the work, a scan for what's suboptimal or risky. Set `effort` on each Agent call from the role's entry in the models file, matched to the job, per the Subagents section of the **aileron** skill.
 
 - Decisions logged with weak or absent evidence.
 - Verification steps skipped or claimed without proof in the transcript.

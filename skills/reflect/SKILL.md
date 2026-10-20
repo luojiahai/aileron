@@ -24,7 +24,7 @@ That covers the session (`<id>.jsonl`) and subagent (`<parent>/subagents/<child>
 
 One message, three `Agent` calls, `subagent_type: general-purpose`, `run_in_background: true`. Reviewers need MCP access to look up the tickets, chat threads, and observability traces the transcript references.
 
-Each reviewer and the synthesizer name a role line in `~/.claude/aileron-models.md` and a default. Set `model` to that line's value, or to the default if the file or the line is missing. Leave `model` unset when the value is `inherit`. If the Agent tool rejects the value, use the default and say so. Set `effort` on each Agent call from the role's line in the models file, as the Subagents section of the **aileron** skill describes. The three lenses are the diversity. Each reviewer starts from a different question over the same transcript.
+Each reviewer and the synthesizer name a role line in `~/.claude/aileron-models.md` and a default. Set `model` to the entry's tier (the part before any `@`), or to the default if the file or the line is missing. Leave `model` unset when the tier is `inherit`. If the Agent tool rejects the value, use the default and say so. Set `effort` on each Agent call from the role's entry in the models file, matched to the job, per the Subagents section of the **aileron** skill. The three lenses are the diversity. Each reviewer starts from a different question over the same transcript.
 
 | Lens | Role line | Default `model` | Prompt template |
 |---|---|---|---|

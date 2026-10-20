@@ -36,7 +36,7 @@ Each reviewer gets `subagent_type: Explore`, `run_in_background: true`, and `mod
 
 If the Agent tool rejects a configured entry, run that reviewer on its table default and say so. Do not block the review on it. Every reviewer still reads the full rubric. The primary lens is where it starts and digs deepest, not a fence.
 
-Read `references/reviewer-prompt.md` and fill in the same template for every reviewer with the stated intent, the diff or file contents, the rubric from `references/rubric.md`, and the code-quality lens from `references/code-quality-review.md`. Fill the primary lens line per reviewer. Set `effort` on each Agent call from the role's line in the models file, as the Subagents section of the **aileron** skill describes.
+Read `references/reviewer-prompt.md` and fill in the same template for every reviewer with the stated intent, the diff or file contents, the rubric from `references/rubric.md`, and the code-quality lens from `references/code-quality-review.md`. Fill the primary lens line per reviewer. Set `effort` on each Agent call from the role's entry in the models file, matched to the job, per the Subagents section of the **aileron** skill.
 
 ## Step 4, Synthesize
 

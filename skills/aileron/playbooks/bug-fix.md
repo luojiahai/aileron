@@ -1,6 +1,6 @@
 ### Bug fix
 
-**You own this task. Plan, review, verify.** Delegate investigation and the fix to subagents, stay in the lead. Set each subagent's `effort` for the job, per the Subagents section.
+**You own this task. Plan, review, verify.** Delegate investigation and the fix to subagents, stay in the lead. Set `effort` on each Agent call from the role's entry in the models file, matched to the job, per the Subagents section.
 
 Be scientific. Every shipped line traces to runtime evidence. Belt-and-suspenders that "might help" is a hypothesis, not a fix. It does not ship. When evidence refutes a hypothesis, revert what it motivated. The smallest change the evidence justifies ships, nothing more.
 

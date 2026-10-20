@@ -7,7 +7,7 @@ description: "Use for \"how does X work\", code walkthroughs before changing som
 
 Explore the codebase to answer "how does X work?" questions. Produce architectural explanations at the level of a senior engineer onboarding onto a subsystem, enough to build a working mental model, not so much that it reads like annotated source code.
 
-Every spawn is an Agent subagent with `subagent_type: Explore` and `run_in_background: true`. Explorers use the `how explorer` line in `~/.claude/aileron-models.md` (default `sonnet`), and every explainer uses the `how explainer` line (default `fable`). Set `model` to that line's value, or to the default if the file or the line is missing. Leave `model` unset when the value is `inherit`. If the Agent tool rejects the value, use the default and say so. Set `effort` on each Agent call from the role's line in the models file, as the Subagents section of the **aileron** skill describes.
+Every spawn is an Agent subagent with `subagent_type: Explore` and `run_in_background: true`. Explorers use the `how explorer` line in `~/.claude/aileron-models.md` (default `sonnet`), and every explainer uses the `how explainer` line (default `fable`). Set `model` to the entry's tier (the part before any `@`), or to the default if the file or the line is missing. Leave `model` unset when the tier is `inherit`. If the Agent tool rejects the value, use the default and say so. Set `effort` on each Agent call from the role's entry in the models file, matched to the job, per the Subagents section of the **aileron** skill.
 
 ## 1. Assess complexity
 
