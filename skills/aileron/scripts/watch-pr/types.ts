@@ -79,11 +79,7 @@ export type Check =
   | (CheckDetails & { readonly kind: "passed" })
   | (CheckDetails & { readonly kind: "skipped" })
   | (CheckDetails & { readonly kind: "failed" })
-  | (CheckDetails & { readonly kind: "pending" })
-  | (CheckDetails & {
-      readonly kind: "code-review-gate";
-      readonly name: "Code Review Gate";
-    });
+  | (CheckDetails & { readonly kind: "pending" });
 export type FailedCheck = Extract<Check, { readonly kind: "failed" }>;
 export type PendingCheck = Extract<Check, { readonly kind: "pending" }>;
 export interface CheckRead {
@@ -379,6 +375,15 @@ export interface RollupPage {
   readonly checks: readonly Check[];
   readonly endCursor: string | null;
 }
+export interface RawReviewThread {
+  readonly id: string;
+  readonly firstComment: ReviewComment | null;
+  readonly resolved: boolean;
+}
+export interface ReviewThreadPage {
+  readonly threads: readonly RawReviewThread[];
+  readonly endCursor: string | null;
+}
 export interface GitHubReader {
   originRepo(): Promise<Repository | null>;
   currentPr(pr: PrNumber | null): Promise<PrContext>;
@@ -389,7 +394,10 @@ export interface GitHubReader {
     context: PrContext,
     after: string | null
   ): Promise<RollupPage>;
-  reviewThreads(context: PrContext): Promise<readonly ReviewThread[]>;
+  reviewThreadPage(
+    context: PrContext,
+    after: string | null
+  ): Promise<ReviewThreadPage>;
   commitRollups(context: PrContext): Promise<readonly CommitRollup[]>;
 }
 export interface PollingOptions {
