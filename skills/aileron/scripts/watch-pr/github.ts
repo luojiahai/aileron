@@ -2,7 +2,7 @@ import { spawn } from "node:child_process";
 import type * as T from "./types.ts";
 import { nonEmpty, parsePrNumber } from "./types.ts";
 export const REVIEW_THREADS_QUERY =
-  "\nquery ReviewThreads($owner: String!, $repo: String!, $pr: Int!) {\n  repository(owner: $owner, name: $repo) {\n    pullRequest(number: $pr) {\n      reviewThreads(first: 100) {\n        nodes {\n          id\n          isResolved\n          comments(first: 10) {\n            nodes {\n              body\n              createdAt\n              path\n              line\n              author { login }\n            }\n          }\n        }\n      }\n    }\n  }\n}\n";
+  "\nquery ReviewThreads($owner: String!, $repo: String!, $pr: Int!, $after: String) {\n  repository(owner: $owner, name: $repo) {\n    pullRequest(number: $pr) {\n      reviewThreads(first: 100, after: $after) {\n        pageInfo {\n          hasNextPage\n          endCursor\n        }\n        nodes {\n          id\n          isResolved\n          comments(first: 10) {\n            nodes {\n              body\n              createdAt\n              path\n              line\n              author { login }\n            }\n          }\n        }\n      }\n    }\n  }\n}\n";
 export const PR_COMMIT_STATUS_QUERY =
   "\nquery PrCommitStatuses($owner: String!, $repo: String!, $pr: Int!) {\n  repository(owner: $owner, name: $repo) {\n    pullRequest(number: $pr) {\n      commits(last: 50) {\n        nodes {\n          commit {\n            oid\n            statusCheckRollup {\n              state\n            }\n          }\n        }\n      }\n    }\n  }\n}\n";
 export const PR_CHECK_ROLLUP_QUERY =
@@ -242,33 +242,13 @@ export function parseFastCheck(value: unknown): T.Check {
     ["FAILURE", "ERROR", "ACTION_REQUIRED"].includes(state)
   )
     return { ...details, kind: "failed", reportedState: state };
-  if (bucket === "pending") return pendingOrGate(details, state);
+  if (bucket === "pending")
+    return { ...details, kind: "pending", reportedState: state };
   if (bucket === "pass")
     return { ...details, kind: "passed", reportedState: state };
   if (bucket === "skipping")
     return { ...details, kind: "skipped", reportedState: state };
   return { ...details, kind: "failed", reportedState: state };
-}
-// The owner-approval gate is excluded from pending everywhere, so the rule has
-// one home. Classifying it as pending on either read path makes the watcher
-// wait on a human, which is the behaviour #172004 removed from the Python.
-function pendingOrGate(
-  details: {
-    readonly name: string;
-    readonly description: string;
-    readonly link: string;
-    readonly workflow: string;
-  },
-  reportedState: string
-): T.Check {
-  return details.name === "Code Review Gate"
-    ? {
-        ...details,
-        kind: "code-review-gate",
-        name: "Code Review Gate",
-        reportedState,
-      }
-    : { ...details, kind: "pending", reportedState };
 }
 export function mapRollupNode(value: unknown): T.Check | null {
   const object = record(value, "rollup node");
@@ -288,7 +268,7 @@ export function mapRollupNode(value: unknown): T.Check | null {
         ? object.conclusion.toUpperCase()
         : "";
     if (status !== "COMPLETED")
-      return pendingOrGate({ ...details, link }, "PENDING");
+      return { ...details, link, kind: "pending", reportedState: "PENDING" };
     if (conclusion === "SUCCESS")
       return { ...details, link, kind: "passed", reportedState: "SUCCESS" };
     if (conclusion === "NEUTRAL" || conclusion === "SKIPPED")
@@ -303,7 +283,7 @@ export function mapRollupNode(value: unknown): T.Check | null {
   const state =
     typeof object.state === "string" ? object.state.toUpperCase() : "";
   if (state === "PENDING" || state === "EXPECTED")
-    return pendingOrGate({ ...details, link }, "PENDING");
+    return { ...details, link, kind: "pending", reportedState: "PENDING" };
   return state === "SUCCESS"
     ? { ...details, link, kind: "passed", reportedState: state }
     : { ...details, link, kind: "failed", reportedState: state || "FAILURE" };
@@ -345,16 +325,13 @@ function passKey(comment: T.ReviewComment | null): string | null {
   const match = /RUN_ID:\s*([a-zA-Z0-9_.:-]+)/.exec(comment.body);
   return match?.[1] ?? null;
 }
-export function parseReviewThreads(value: unknown): readonly T.ReviewThread[] {
-  const nodes = list(
-    at(value, ["data", "repository", "pullRequest", "reviewThreads", "nodes"]),
-    "reviewThreads.nodes"
+export function parseReviewThreadPage(value: unknown): T.ReviewThreadPage {
+  const reviewThreads = record(
+    at(value, ["data", "repository", "pullRequest", "reviewThreads"]),
+    "reviewThreads"
   );
-  const threads: {
-    readonly id: string;
-    readonly firstComment: T.ReviewComment | null;
-    readonly resolved: boolean;
-  }[] = [];
+  const nodes = list(reviewThreads.nodes, "reviewThreads.nodes");
+  const threads: T.RawReviewThread[] = [];
   for (const node of nodes) {
     const thread = record(node, "review thread");
     if (typeof thread.isResolved !== "boolean")
@@ -369,6 +346,18 @@ export function parseReviewThreads(value: unknown): readonly T.ReviewThread[] {
       resolved: thread.isResolved,
     });
   }
+  const page = record(reviewThreads.pageInfo, "reviewThreads.pageInfo");
+  if (typeof page.hasNextPage !== "boolean")
+    missing("reviewThreads.pageInfo.hasNextPage", page.hasNextPage);
+  const cursor = optionalString(
+    page.endCursor,
+    "reviewThreads.pageInfo.endCursor"
+  );
+  return { threads, endCursor: page.hasNextPage && cursor ? cursor : null };
+}
+export function buildReviewThreads(
+  threads: readonly T.RawReviewThread[]
+): readonly T.ReviewThread[] {
   const keys = new Set<string>();
   let keyless = false;
   for (const thread of threads) {
@@ -556,12 +545,13 @@ export class GhGitHubReader implements T.GitHubReader {
     );
     return { checks, endCursor: page.hasNextPage && cursor ? cursor : null };
   }
-  async reviewThreads(
-    context: T.PrContext
-  ): Promise<readonly T.ReviewThread[]> {
-    return parseReviewThreads(
-      await runJson(graphqlArgs(REVIEW_THREADS_QUERY, context))
-    );
+  async reviewThreadPage(
+    context: T.PrContext,
+    after: string | null
+  ): Promise<T.ReviewThreadPage> {
+    const argv = graphqlArgs(REVIEW_THREADS_QUERY, context);
+    if (after !== null) argv.push("-f", `after=${after}`);
+    return parseReviewThreadPage(await runJson(argv));
   }
   async commitRollups(
     context: T.PrContext
@@ -610,6 +600,19 @@ export async function resolveChecks(
       ? `fast path exit=${fast.exitCode}; GraphQL rollup was empty${firstLine(fast.stderr) ? `; ${firstLine(fast.stderr)}` : ""}`
       : "fast path and GraphQL rollup were empty";
   throw new ChecksUnavailable(`could not read PR checks: ${suffix}`);
+}
+export async function resolveReviewThreads(
+  reader: T.GitHubReader,
+  context: T.PrContext
+): Promise<readonly T.ReviewThread[]> {
+  const threads: T.RawReviewThread[] = [];
+  let after: string | null = null;
+  do {
+    const page = await reader.reviewThreadPage(context, after);
+    threads.push(...page.threads);
+    after = page.endCursor;
+  } while (after !== null);
+  return buildReviewThreads(threads);
 }
 export async function resolveContext(args: {
   readonly reader: T.GitHubReader;

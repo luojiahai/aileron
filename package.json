@@ -3,6 +3,7 @@
   "version": "0.1.1",
   "private": true,
   "scripts": {
+    "check": "node scripts/check-aileron-docs.mjs",
     "version": "changeset version && node scripts/sync-version.mjs",
     "release": "changeset publish"
   },

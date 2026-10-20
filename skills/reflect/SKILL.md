@@ -8,66 +8,56 @@ disable-model-invocation: true
 
 Mine the current conversation for durable learnings, then route them into skill edits.
 
-## When to invoke
+Invoke when the user says "reflect" or "/reflect". Skip when the conversation is trivial, off-topic, or already covered by an existing skill the parent followed correctly. One-offs are not learnings.
 
-- The user said "reflect" or "/reflect".
-- A complex task (5+ tool calls) just landed cleanly and the recipe is worth keeping.
-- The agent hit dead ends, found the working path, and the path generalizes.
-- The user corrected the agent's approach mid-task.
-- A non-trivial workflow emerged that isn't captured anywhere.
+## 1. Locate the active transcript
 
-Skip when the conversation is trivial, off-topic, or already covered by an existing skill the parent followed correctly. One-offs are not learnings.
-
-## Process
-
-### 1. Locate the active transcript
-
-The parent finds its own transcript file before fanning out. Claude Code stores transcripts under `~/.claude/projects/<slug>/*.jsonl`, where `<slug>` is the absolute working directory with `/` and `.` replaced by `-` (so `/Users/you/proj` becomes `-Users-you-proj`). Use only the slug for the active working directory. Do not glob across `~/.claude/projects/*/`. That crosses project boundaries and reads private chats from unrelated projects.
+Before fanning out, find this conversation's transcript. Claude Code stores transcripts under `~/.claude/projects/<slug>/`, where `<slug>` is the absolute working directory with `/` and `.` replaced by `-` (so `/Users/you/proj` becomes `-Users-you-proj`). Use only the slug for the active working directory. Do not glob across `~/.claude/projects/*/`. That crosses project boundaries and reads private chats from unrelated projects.
 
 ```bash
 ls -t ~/.claude/projects/<slug>/*.jsonl ~/.claude/projects/<slug>/*/subagents/*.jsonl 2>/dev/null | head -10
 ```
 
-Two transcript layouts: session (`<id>.jsonl`) and subagent (`<parent>/subagents/<child>.jsonl`).
+That covers the session (`<id>.jsonl`) and subagent (`<parent>/subagents/<child>.jsonl`) layouts. For each candidate, read the first JSONL line. Take the file whose `message.content[0].text` contains the conversation's opening user prompt. If none matches, pass a tight digest of the session instead.
 
-For each candidate, read the first JSONL line and check that `message.content[0].text` contains the conversation's opening user prompt. Take the matching path. If no path resolves, write a tight digest of the session and pass that instead.
+## 2. Spawn three reviewers in parallel
 
-### 2. Spawn three reviewers in parallel
+One message, three `Agent` calls, `subagent_type: general-purpose`, `run_in_background: true`. Reviewers need MCP access to look up the tickets, chat threads, and observability traces the transcript references.
 
-One message, three `Agent` calls, `subagent_type: general-purpose`, `run_in_background: true`, explicit `model:` on each (omit it for `inherit`). Reviewers need MCP access for context lookups (tickets, chat threads, observability traces referenced in the transcript). The prompt forbids file writes; the parent applies edits. The three lenses are the diversity; each reviewer starts from a different question over the same transcript.
+Each reviewer and the synthesizer name a role line in `~/.claude/aileron-models.md` and a default. Set `model` to the entry's tier (the part before any `@`), or to the default if the file or the line is missing. Leave `model` unset when the tier is `inherit`. If the Agent tool rejects the value, use the default and say so. Set `effort` on each Agent call from the role's entry in the models file, matched to the job, per the Subagents section of the **aileron** skill. The three lenses are the diversity. Each reviewer starts from a different question over the same transcript.
 
-| Lens | `model` | Prompt template |
-|---|---|---|
-| Judgment | your configured `reflect judgment` model in `~/.claude/aileron-models.md` (default `fable`) | `references/judgment-reviewer.md` |
-| Tooling | your configured `reflect tooling` model (default `opus`) | `references/tooling-reviewer.md` |
-| Divergent | your configured `reflect judgment` model (default `fable`) | `references/divergent-reviewer.md` |
+| Lens | Role line | Default `model` | Prompt template |
+|---|---|---|---|
+| Judgment | `reflect judgment, divergent, synthesizer` | `fable` | `references/judgment-reviewer.md` |
+| Tooling | `reflect tooling` | `opus` | `references/tooling-reviewer.md` |
+| Divergent | `reflect judgment, divergent, synthesizer` | `fable` | `references/divergent-reviewer.md` |
 
 Pass each template verbatim, substituting the transcript path or digest where marked. Reviewers return findings in the `Agent` response body.
 
-### 3. Synthesize
+## 3. Synthesize
 
-One `Agent` call, `subagent_type: general-purpose`, `run_in_background: true`, using your configured `reflect judgment` model (default `fable`). The synthesizer's quality check includes spot-verifying citations, which can require MCP access. Use `references/synthesizer.md` verbatim, with each reviewer's full output inlined where marked. The synthesizer returns a structured Accepted / Rejected / Backlog list.
+One `Agent` call, `subagent_type: general-purpose`, `run_in_background: true`, `model` from the `reflect judgment, divergent, synthesizer` line (default `fable`). It spot-verifies citations through MCP. Pass `references/synthesizer.md` verbatim, with each reviewer's full output inlined where marked. It returns an Accepted / Rejected / Backlog list.
 
-### 4. Structural enforcement check
+## 4. Structural enforcement check
 
-Sanity-check the synthesizer's Accepted list. For any item that would be enforced more reliably by a lint rule, script, metadata flag, or runtime check, move it from Accepted to Backlog. The synthesizer already applies this criterion; this is a final pass before edits land. See the **encode-lessons-in-structure** principle skill.
+Move any Accepted item that a lint rule, script, metadata flag, or runtime check would enforce more reliably to Backlog. See the **encode-lessons-in-structure** principle skill.
 
-### 5. Apply
+## 5. Apply
 
-Before applying any Accepted edit, present the synthesizer's full Accepted/Rejected/Backlog output to the user and wait for explicit approval. The user picks which subset to apply and may redirect routings. Skill changes affect every future agent in the org; do not auto-apply.
+Present the synthesizer's full Accepted / Rejected / Backlog output and wait for explicit approval before applying any Accepted edit. The user picks the subset and may redirect routings. Skill changes affect every future agent in the org. Do not auto-apply.
 
-Backlog items file to whatever devex / backlog tracker your team uses automatically. Those are tracker submissions, not skill edits. Only the Accepted list waits for approval.
+File each Backlog item to your team's devex or backlog tracker without waiting. Only the Accepted list waits for approval.
 
-For each approved Accepted item, follow the Routing field exactly:
+Follow each approved row's Routing exactly:
 
-- Trivial existing-skill edit (a one-line bullet, a tightened sentence, a stale fact corrected): parent does directly.
+- Trivial existing-skill edit (a one-line bullet, a tightened sentence, a stale fact corrected): the parent does it directly.
 - Substantive existing-skill edit (a new section, a new pattern table, more than ~10 lines): follow the Authoring a skill playbook (`skills/aileron/playbooks/authoring-a-skill.md`) and run its draft / test / iterate loop.
 - `tune description: <skill path>` (the skill exists but didn't trigger when it should have): follow the playbook's description-optimization loop.
 - `new skill: <kebab-name>`: write `SKILL.md` per the playbook, at `~/.claude/skills/<kebab-name>/SKILL.md` for a personal skill or `.claude/skills/<kebab-name>/SKILL.md` for a project one. Do not invent the shape ad hoc.
 
-If your environment ships a SKILL.md validator, run it on every touched skill before declaring done. Skip this step if it doesn't.
+If your environment ships a SKILL.md validator, run it on every touched skill before declaring done.
 
-### 6. Summarize for the user
+## 6. Summarize for the user
 
 Short list, no preamble:
 

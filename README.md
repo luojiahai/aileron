@@ -27,12 +27,12 @@ Every user-facing change adds a changeset with `npx changeset`. Merging to `main
 
 Two steps:
 
-1. Run [`/setup-aileron`](./skills/setup-aileron/SKILL.md) and choose which models you want per role.
+1. Run [`/setup-aileron`](./skills/setup-aileron/SKILL.md), pick a reasoning budget, and choose which models you want per role.
 2. Use [`/aileron`](./skills/aileron/SKILL.md) whenever you're doing anything that requires rigor.
 
 New here? The [aileron guide](./docs/guide/README.md) walks you through a first real task, from setup and prompting through verification and overnight runs.
 
-That's it. The other skills are situational; the mode skill uses them for you as needed. Out of the box the mode splits work by role: precisely specified code goes to opus, prose and judgment go to fable, and bulk mechanical work goes to sonnet. The default panel is fable / opus / sonnet. [`/setup-aileron`](./skills/setup-aileron/SKILL.md) changes any of it.
+That's it. The other skills are situational, and the mode skill uses them for you as needed. Out of the box the mode splits work by role: precisely specified code goes to opus, prose and judgment go to fable, and bulk mechanical work goes to sonnet. The default panel is fable / opus / sonnet. [`/setup-aileron`](./skills/setup-aileron/SKILL.md) changes any of it.
 
 ## Usage
 
@@ -40,7 +40,7 @@ Use [`/aileron`](./skills/aileron/SKILL.md) at the start of a task. It reads you
 
 ### Just use [`/aileron`](./skills/aileron/SKILL.md)
 
-This skill is the main shortcut. Use it whenever you need the agent to do rigorous engineering work. It comes with twenty-two playbooks:
+This skill is the main shortcut. Use it whenever you need the agent to do rigorous engineering work. It comes with twenty-three playbooks:
 
 ```
 /aileron this pr has a subtle bug where the scroll drifts every 750ms even when idle. repro
@@ -53,7 +53,7 @@ morning.
 ```
 
 <details>
-<summary>The twenty-two playbooks</summary>
+<summary>The twenty-three playbooks</summary>
 
 | Playbook | For |
 |---|---|
@@ -70,26 +70,24 @@ morning.
 | [Authoring a skill](./skills/aileron/playbooks/authoring-a-skill.md) | Writing or editing a SKILL.md. |
 | [Eval](./skills/aileron/playbooks/eval.md) | Test how a skill or prompt change affects agent behavior, blinded. |
 | [Babysit](./skills/aileron/playbooks/babysit.md) | Drive a PR or a stack to merge-ready. Conflicts, review threads, CI. |
-| [Shipping](./skills/aileron/playbooks/shipping.md) | Independently verify a green stack, then land the contiguous verified run with Graphite merge-when-ready. |
+| [Shipping](./skills/aileron/playbooks/shipping.md) | Independently verify a green stack, then land the contiguous verified run bottom-up through `gh`. |
 | [Autonomous run](./skills/aileron/playbooks/autonomous-run.md) | Drive a long task to completion without stopping. |
 | [Orchestrate](./skills/aileron/playbooks/orchestrate.md) | A standing project handed to one coordinator chat. Multi-day, many stacked PRs, fleets of subagents. |
-| [autopilot-full](./skills/aileron/playbooks/autopilot-full.md) | Run independent PRs to merged with one owner per PR and root verification of each merge-ready head. |
-| [autopilot-stack](./skills/aileron/playbooks/autopilot-stack.md) | Build and verify one linear Graphite stack for the operator to review and land. |
+| [autopilot-full](./skills/aileron/playbooks/autopilot-full.md) | Run independent PRs to merged with one owner per PR. A swarm verifies each code-ready head, and every later change to the patch gets a fresh check. |
+| [autopilot-stack](./skills/aileron/playbooks/autopilot-stack.md) | Build and verify one linear base-branch stack for the operator to review and land. |
 | [Session pickup](./skills/aileron/playbooks/session-pickup.md) | Resume or take over a prior agent's in-flight work. |
 | [Pause safely](./skills/aileron/playbooks/pause-safely.md) | Suspend in-flight work cleanly so it can be resumed later. |
 | [Multi-phase plan](./skills/aileron/playbooks/multi-phase-plan.md) | Work that spans phases or stacked PRs. |
 | [Worktree cleanup](./skills/aileron/playbooks/worktree-cleanup.md) | Reclaim disk by pruning merged or abandoned worktrees and stale iOS simulators, safety-gated. |
+| [Opening a PR](./skills/aileron/playbooks/opening-a-pr.md) | Open a ready PR from small ordered commits with a Conventional Commits title and a briefing-style body. Invoked at the end of every other playbook. |
 
 </details>
 
-Every playbook ends by invoking [opening a PR](./skills/aileron/playbooks/opening-a-pr.md).
-
 When invoked it:
 
-1. Opens a todo list. The first item is reading the inline principles index in the skill.
-2. Matches your task to a [playbook](./skills/aileron/playbooks/) and copies the steps in verbatim.
-3. Routes to the other skills as the steps fire.
-4. Writes unslopped replies framed for the consumer and the maintainer.
+1. Matches your task to a [playbook](./skills/aileron/playbooks/) and opens a todo list whose first items are its steps, copied in verbatim.
+2. Routes to the other skills as the steps fire.
+3. Writes unslopped replies framed for the consumer and the maintainer.
 
 The full rules and playbooks live in [`skills/aileron/SKILL.md`](./skills/aileron/SKILL.md).
 
@@ -117,25 +115,32 @@ Every skill is also reachable with the plugin prefix, as `/aileron:<skill>`, whe
 | Skill | Use it when |
 |---|---|
 | [`/aileron`](./skills/aileron/SKILL.md) | Default entry point for any non-trivial task. |
+| [`/in-your-own-words`](./skills/in-your-own-words/SKILL.md) | You want the agent to play back your goal and the problem before it starts. Runs only when you type `/in-your-own-words`. |
+| [`/sharpen`](./skills/sharpen/SKILL.md) | You want a prompt made deeper, not bigger, before you send it. Adds what a top professional would do that you didn't ask for, the raw material they'd start from, their methods and tools, and an outside check that the result is right. Hands back the rewritten prompt and leaves your choices open. Doesn't do the task. Runs only when you type `/sharpen`. |
 | [`/how`](./skills/how/SKILL.md) | You want a walkthrough of how a subsystem works. |
 | [`/why`](./skills/why/SKILL.md) | You want to know why something was built this way. Discovers available MCPs at run time and queries each evidence category in parallel (source control, issue tracker, long-form docs, real-time chat, infra observability, error tracking, analytics warehouse). |
 | [`/recall`](./skills/recall/SKILL.md) | You're starting or resuming work and want your recent context on a topic rebuilt from your own chat history and the shared record, handed back as a tight current-state brief. |
+| [`/ketchup`](./skills/ketchup/SKILL.md) | You want what changed in this chat since your last message, in plain words and small visuals, with every item waiting on you listed and decidable from the reply alone, even when that makes the reply long. |
 | [`/blast-radius`](./skills/blast-radius/SKILL.md) | You have a small-looking change and want to know what else it could break, with the one fact it's safe because of proven by running code, not asserted. |
 | [`/architect`](./skills/architect/SKILL.md) | You're about to write code that crosses a function boundary and want the caller's usage, types, and module shape settled first. |
 | [`/arena`](./skills/arena/SKILL.md) | You want N parallel attempts at the same thing, then to grab the best parts of each. |
 | [`/swarm`](./skills/swarm/SKILL.md) | You want N parallel workers across different slices or races, then one aggregated report. |
 | [`/interrogate`](./skills/interrogate/SKILL.md) | You have a diff and want several reviewers with distinct lenses to try to break it, including a strict code-quality lens. |
 | [`/automate-me`](./skills/automate-me/SKILL.md) | You want your own `-mode` skill, drafted from how you've actually worked. |
-| [`/setup-aileron`](./skills/setup-aileron/SKILL.md) | You want to pick which models aileron uses per role. Writes `~/.claude/aileron-models.md`. |
+| [`/setup-aileron`](./skills/setup-aileron/SKILL.md) | You want to pick which models aileron uses per role and at what reasoning budget. Writes `~/.claude/aileron-models.md`. |
 | [`/reflect`](./skills/reflect/SKILL.md) | A long task landed and you want the recipe captured as a skill edit. |
+| [`/correct`](./skills/correct/SKILL.md) | You keep correcting agents for the same mistakes. Mines history for mistake classes, fixes each at the highest level that works (architecture, then types, lint, and CI, then tests, with docs last), and keeps a table pairing each rule with what enforces it. |
 | [`/teach`](./skills/teach/SKILL.md) | You want to actually understand a change or subsystem, not just have it summarized. Runs how + why and weaves one plain explanation, built up diagram by diagram. |
 | [`/tdd`](./skills/tdd/SKILL.md) | You're fixing a bug and there's a cheap local test path. Write the failing test first, then the fix. |
+| [`/benchmark-checklist`](./skills/benchmark-checklist/SKILL.md) | You ran a benchmark or measured a speedup or regression. Vets the number (limiter, tuning, errors, repeat runs, end-to-end relevance) before you report or act on it. |
 | [`/no-comments`](./skills/no-comments/SKILL.md) | Strip comments before review; spawns Comment Sicko, fixes accepted findings, offers encodings for claimed constraints. |
 | [`/typescript-best-practices`](./skills/typescript-best-practices/SKILL.md) | You're reading or editing TypeScript. Grounds the type-system-discipline principle in syntax. |
 | [`/figure-it-out`](./skills/figure-it-out/SKILL.md) | No bundled playbook fits. Designs a rigorous, auditable playbook for the task. |
 | [`/show-me-your-work`](./skills/show-me-your-work/SKILL.md) | You want a reviewable decision trail. Logs decisions to a TSV you can commit. |
 | [`/create-verification-skill`](./skills/create-verification-skill/SKILL.md) | Your project has no scripted way to prove app behavior. Generates a project-local verify skill with a feature map, for any language or platform. |
 | [`/maintain-verification-skill`](./skills/maintain-verification-skill/SKILL.md) | Your verify skill's feature map has drifted from the app. Source wave + one live pass, at most one PR of proven corrections. |
+| [`/create-formal-verification-skill`](./skills/create-formal-verification-skill/SKILL.md) | Tests can't reach the case that breaks a race, retry, state machine, parser, or unsafe code. Verifies one property with the tool that fits and generates a project-local skill to recheck it on every change. |
+| [`/maintain-formal-verification-skill`](./skills/maintain-formal-verification-skill/SKILL.md) | Code your formal verification covers has changed since it was last checked. Updates the model, harness, or properties to match the code, reruns, and says whether each failure is drift in the verification or a bug in the code. |
 | [`/unslop`](./skills/unslop/SKILL.md) | You're cleaning up writing. Removes AI tells. |
 | [`/bro`](./skills/bro/SKILL.md) | You want the last message restated in plain human language, no jargon. |
 | [`/technical-writing`](./skills/technical-writing/SKILL.md) | Layered doc standard (Diátaxis + Google developer style + STE + Global English) for docs, RFCs, readmes, PR descriptions, commit messages. |
@@ -180,6 +185,7 @@ tdd:               /tdd implement
 unslop:            can we unslop and tighten the new changes?
 reflect:           /reflect that took too long. capture what we learned so the next run doesn't
                    repeat it.
+correct:           /correct
 show-me-your-work: /show-me-your-work keep a decision trail i can review when i'm back.
 automate-me:       /automate-me
 ```
@@ -188,24 +194,25 @@ automate-me:       /automate-me
 
 ## The `aileron-agent` and Comment Sicko subagents
 
-aileron also ships a subagent that runs the aileron style end to end. Spawn it from a parent agent via [`subagent_type: "aileron-agent"`](./agents/aileron-agent.md). It reads `aileron` in full, including its inline principles index, before doing any work. Substituting `general-purpose` skips that read and drifts.
+[`/aileron`](./skills/aileron/SKILL.md) runs in the chat that receives it. That chat owns the playbook, the todo list, and every subagent spawn.
 
-[`/aileron`](./skills/aileron/SKILL.md) and [`subagent_type: "aileron-agent"`](./agents/aileron-agent.md) route through the same wrapper.
+aileron also ships [`subagent_type: "aileron-agent"`](./agents/aileron-agent.md) as the wrapper for delegates spawned during a run. It reads `aileron` in full, including its inline principles index, before doing any work. Substituting `general-purpose` skips that read and drifts. Do not spawn `aileron-agent` to run the playbook itself.
 
 aileron also ships [Comment Sicko](./agents/comment-sicko.md), a read-only comment reviewer available as `subagent_type: "comment-sicko"`. Usually invoke it through [`/no-comments`](./skills/no-comments/SKILL.md), not directly.
 
 ## Principles
 
-Twenty-one short skills, one principle each. `aileron` indexes them inline and reads that index at task start. The standalone files are there so other skills can reference a principle by name, and so the index can point at the full rule for each.
+Twenty-four short skills, one principle each. `aileron` indexes them inline and reads that index at task start. The standalone files are there so other skills can reference a principle by name, and so the index can point at the full rule for each.
 
 <details>
-<summary>All twenty-one principles</summary>
+<summary>All twenty-four principles</summary>
 
 | Principle | Group | Rule |
 |---|---|---|
 | [laziness-protocol](./skills/principle-laziness-protocol/SKILL.md) | Core | Bias toward deletion and the smallest change that solves the problem. |
 | [foundational-thinking](./skills/principle-foundational-thinking/SKILL.md) | Core | Apply before writing logic: choosing core types and data structures, sequencing scaffold-vs-feature work, asking what concurrent actors share. Get the data structures right so downstream code becomes obvious. |
 | [redesign-from-first-principles](./skills/principle-redesign-from-first-principles/SKILL.md) | Core | Redesign as if the requirement had been a foundational assumption from day one, instead of bolting it on. |
+| [attack-the-premise](./skills/principle-attack-the-premise/SKILL.md) | Core | Apply when two or more fixes that share one premise have failed the same gate. Write the premise down and test it directly before you write another fix that assumes it. |
 | [subtract-before-you-add](./skills/principle-subtract-before-you-add/SKILL.md) | Core | Remove dead weight, redundant validators, and stub references first, then build on the simpler base. |
 | [minimize-reader-load](./skills/principle-minimize-reader-load/SKILL.md) | Core | Count layers between question and answer, and hidden state in the reader's head; collapse one-caller wrappers and shrink mutable scope. |
 | [outcome-oriented-execution](./skills/principle-outcome-oriented-execution/SKILL.md) | Core | Apply during planned rewrites and migrations with explicit phase boundaries. Converge on the target architecture; don't preserve smooth intermediate states with throwaway compatibility code. |
@@ -214,13 +221,15 @@ Twenty-one short skills, one principle each. `aileron` indexes them inline and r
 | [build-the-lever](./skills/principle-build-the-lever/SKILL.md) | Core | Apply to any non-trivial work, not just bulk work: edits, migrations, analyses, checks. Build the tool that does it or proves it (codemod, script, generator, or a skill your subagents follow) instead of working by hand. The tool is the artifact a reviewer can rerun. |
 | [model-the-domain](./skills/principle-model-the-domain/SKILL.md) | Architecture | Encode the domain in a structure instead of scattered conditionals. |
 | [boundary-discipline](./skills/principle-boundary-discipline/SKILL.md) | Architecture | Concentrate guards at system boundaries (CLI, config, network, external APIs); trust internal types and keep business logic in pure functions. |
-| [type-system-discipline](./skills/principle-type-system-discipline/SKILL.md) | Architecture | Make illegal states unrepresentable, brand semantic primitives, parse external data at boundaries, refuse to lie to the compiler, exhaust variants, derive from authoritative schemas. |
+| [type-system-discipline](./skills/principle-type-system-discipline/SKILL.md) | Architecture | Make illegal states unrepresentable, brand semantic primitives, parse external data at boundaries, exhaust variants, derive from authoritative schemas. |
 | [make-operations-idempotent](./skills/principle-make-operations-idempotent/SKILL.md) | Architecture | Converge to the same end state regardless of partial prior runs. |
 | [migrate-callers-then-delete-legacy-apis](./skills/principle-migrate-callers-then-delete-legacy-apis/SKILL.md) | Architecture | Migrate callers and delete the old API in the same wave instead of preserving compatibility layers. |
 | [separate-before-serializing-shared-state](./skills/principle-separate-before-serializing-shared-state/SKILL.md) | Architecture | Eliminate the sharing first; serialize structurally only when one shared writer is a real invariant. |
 | [prove-it-works](./skills/principle-prove-it-works/SKILL.md) | Verification | Apply after completing a task, before declaring done. Verify against the real artifact (run the feature, read the actual value, inspect the diff), not a proxy, self-report, or 'it compiles.'. |
-| [fix-root-causes](./skills/principle-fix-root-causes/SKILL.md) | Verification | Trace each symptom to its root cause and fix it there; reproduce first, ask why until you reach it, resist nil-check guards that silence crashes. |
+| [fix-root-causes](./skills/principle-fix-root-causes/SKILL.md) | Verification | Trace each symptom back to the first place the system went wrong and fix it there. A guard is a fix only when the state it handles is legitimate. |
 | [sequence-verifiable-units](./skills/principle-sequence-verifiable-units/SKILL.md) | Verification | Apply to multi-step work (sweeps, migrations, runs of similar edits) and to how you stack commits and PRs. Break work into small units that each end in a verifiable state, check each before the next, and order delivery so the sequence proves itself to a reviewer. |
+| [test-behavior-not-implementation](./skills/principle-test-behavior-not-implementation/SKILL.md) | Verification | Apply when you write, change, or keep a test. Assert what the code's users can observe, so the test fails when that behavior breaks and keeps passing when only the internals change. |
+| [explain-the-number](./skills/principle-explain-the-number/SKILL.md) | Verification | Apply before you trust, report, or act on a number you measured: a speedup, a regression, a throughput, a latency, or an eval result. Find what limits it, and rule out that it measured something other than the work you think. |
 | [guard-the-context-window](./skills/principle-guard-the-context-window/SKILL.md) | Delegation | Route bulk to subagents; keep summaries in the main thread, not raw payloads. |
 | [never-block-on-the-human](./skills/principle-never-block-on-the-human/SKILL.md) | Delegation | Proceed, present the result, let the human course-correct after the fact; reserve confirmation for irreversible actions. |
 | [encode-lessons-in-structure](./skills/principle-encode-lessons-in-structure/SKILL.md) | Meta | Encode the rule as a lint, metadata flag, runtime check, or script instead of more text. |
@@ -244,13 +253,19 @@ The defaults:
 | Code (precisely specified changes) | `opus` |
 | Judgment and prose | `fable` |
 | Bulk mechanical work | `sonnet` |
-| Panels (critics, arena runners, cross-judges, interrogate reviewers, swarm workers) | `fable`, `opus`, `sonnet` |
+| Panels (arena runners, cross-judges, interrogate reviewers, swarm workers) | `fable`, `opus`, `sonnet` |
 
-Valid values are `fable`, `opus`, `sonnet`, `haiku`, and `inherit`. A role set to `inherit` runs on the parent session's model.
+Each line in the file is `role: tier`. Valid tiers are `fable`, `opus`, `sonnet`, `haiku`, and `inherit`. A role set to `inherit` runs on the parent session's model.
+
+Reasoning effort is optional. [`/setup-aileron`](./skills/setup-aileron/SKILL.md) asks for a budget and writes it as a `budget: <effort>` line, the default effort for every role. Any entry can override it with an `@effort` suffix, as in `opus@high`. Effort is one of `low`, `medium`, `high`, `xhigh`, or `max`. With neither set, aileron passes no effort.
+
+When a default changes, a file written before the change still pins the old default. Delete those role lines, or delete the file, then run `/setup-aileron` again.
 
 ## Credits
 
 aileron is a fork of poteto's [pstack](https://github.com/cursor/plugins/tree/main/pstack), adapted and extended for Claude Code. MIT.
+
+Last synced with pstack at [`88d4751`](https://github.com/cursor/plugins/commit/88d4751) (2026-10-19).
 
 ## License
 
