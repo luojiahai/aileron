@@ -45,10 +45,10 @@ m = json.load(open(path))
 ps = m.get("plugins", [])
 ok = True
 mine = [p for p in ps if p.get("name") == "aileron"]
-print("plugins:  " + str([(p["name"], p["version"], p["path"]) for p in ps]))
+print("plugins:  " + str([(p.get("name"), p.get("version"), p.get("path")) for p in ps]))
 if len(mine) != 1: print("FAIL: expected exactly one aileron plugin"); ok = False
-elif mine[0]["path"] != repo: print("FAIL: aileron loaded from " + mine[0]["path"] + ", not this checkout"); ok = False
-elif mine[0]["version"] != want: print("FAIL: loaded version " + mine[0]["version"] + " != plugin.json " + want); ok = False
+elif mine[0].get("path") != repo: print("FAIL: aileron loaded from " + str(mine[0].get("path")) + ", not this checkout"); ok = False
+elif mine[0].get("version") != want: print("FAIL: loaded version " + str(mine[0].get("version")) + " != plugin.json " + want); ok = False
 cmds = [c for c in m.get("slash_commands", []) if c.startswith("aileron:")]
 ags = [a for a in m.get("agents", []) if a.startswith("aileron:")]
 print("skills:   %d aileron:* slash commands" % len(cmds))
@@ -79,7 +79,7 @@ with open(out+".tools.txt","w") as tools:
         try: m=json.loads(line)
         except: continue
         if m.get("type")=="assistant":
-            for b in m["message"]["content"]:
+            for b in m.get("message", {}).get("content", []):
                 if b.get("type")=="tool_use": tools.write(json.dumps({"tool":b["name"],"input":b.get("input")})[:2000]+"\n")
         if m.get("type")=="result": res=m
 open(out+".result.txt","w").write((res or {}).get("result","") if res else "NO RESULT EVENT")

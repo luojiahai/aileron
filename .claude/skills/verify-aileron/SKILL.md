@@ -5,7 +5,7 @@ description: "Launch and drive the aileron Claude Code plugin from this checkout
 
 # Verify aileron
 
-aileron is a Claude Code plugin: 44 skills under `skills/`, two agents under `agents/`, one `UserPromptSubmit` hook in `hooks/hooks.json`, manifests in `.claude-plugin/`. There is no server or UI. The "app" is Claude Code with this checkout loaded via `--plugin-dir`, and the user surface is slash commands (`/aileron:<skill>`), the hook nudge on every prompt, and the agents. Secondary surface: the release scripts (`scripts/sync-version.mjs`, changesets).
+aileron is a Claude Code plugin: 54 skills under `skills/`, two agents under `agents/`, one `UserPromptSubmit` hook in `hooks/hooks.json`, manifests in `.claude-plugin/`. There is no server or UI. The "app" is Claude Code with this checkout loaded via `--plugin-dir`, and the user surface is slash commands (`/aileron:<skill>`), the hook nudge on every prompt, and the agents. Secondary surface: the release scripts (`scripts/sync-version.mjs`, changesets).
 
 Everything below runs through one helper, `scripts/aileron-verify.sh`. Read `features/README.md` for the map before driving.
 
@@ -27,7 +27,7 @@ Ready signal: the first stream line with `"subtype":"init"` lists `plugins` cont
 
 Why a scratch cwd, not the repo: the installed `aileron@aileron` (a cached copy, currently 0.1.0) is enabled at *local* scope for this repo via `.claude/settings.local.json`. A session started inside the repo loads both copies and skill invocations may resolve to the cache, not your edits. From any other cwd only `--plugin-dir` loads. Do not set `CLAUDE_CONFIG_DIR` to an empty dir for isolation: auth lives in the real config and the session fails with `Not logged in`.
 
-Knobs (env): `RUN_ID` (groups evidence; default pid), `MODEL` (default `sonnet`; `haiku` is fine for load checks, unreliable for following skills), `MAX_TURNS` (default 3), `ALLOWED_TOOLS` (space-separated, e.g. `"Agent TodoWrite"`; headless runs in default permission mode, so unlisted tools that need permission are denied, not prompted).
+Knobs (env): `RUN_ID` (groups evidence; default pid), `MODEL` (default `sonnet`; `haiku` is fine for load checks, unreliable for following skills), `MAX_TURNS` (default 3), `ALLOWED_TOOLS` (space-separated, e.g. `"Agent Read"`; headless runs in default permission mode, so unlisted tools that need permission are denied, not prompted).
 
 ## Doctor
 
@@ -35,7 +35,7 @@ Knobs (env): `RUN_ID` (groups evidence; default pid), `MODEL` (default `sonnet`;
 RUN_ID=<id> .claude/skills/verify-aileron/scripts/aileron-verify.sh doctor
 ```
 
-Read-only. Passes when: `claude plugin validate` accepts the manifests; a one-turn haiku probe's init event shows exactly one `aileron` plugin, at this checkout's path, at the version in `.claude-plugin/plugin.json`; `aileron:*` slash commands are present; agents are exactly `aileron:aileron-agent` and `aileron:comment-sicko`. Run it first, and again after anything surprising. `no init event` means not logged in or the CLI failed to start; run `claude` interactively once.
+Read-only. Passes when: `claude plugin validate` accepts the manifests; a one-turn haiku probe's init event shows exactly one `aileron` plugin, at this checkout's path, at the version in `.claude-plugin/plugin.json`; `aileron:*` slash commands are present; agents are exactly `aileron:aileron-agent` and `aileron:comment-sicko`. The `plugins:` line also lists Claude Code's built-in `cc-plugin-*` entries (path `builtin`, no version, printed as `None`); they are expected. Run it first, and again after anything surprising. `no init event` means not logged in or the CLI failed to start; run `claude` interactively once.
 
 ## Drive
 
@@ -52,7 +52,7 @@ Each drive writes to `$ARTIFACTS/<label>.*` (default `.claude/skills/verify-aile
 
 Stable markers to assert in `transcript.jsonl`:
 
-- skill loaded from this checkout: `<command-name>/aileron:<skill>` and `Base directory for this skill: <repo>/skills/<skill>`
+- skill loaded from this checkout: `<command-name>/aileron:<skill>` (grep for that exact prefix; a bare `<command-name>` also matches the Skill tool description in the system prompt) and `Base directory for this skill: <repo>/skills/<skill>`
 - hook fired: a record with `"type":"hook_success","hookName":"UserPromptSubmit"` whose `content` begins `aileron: new task?`
 - agent registered: init event `agents` list; agent used: a `tool_use` of `Agent` with `subagent_type` `aileron:<agent>` in `tools.txt`
 

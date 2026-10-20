@@ -7,7 +7,7 @@ Maintained source for verifying aileron's user-facing behavior. Read this index,
 - Logged in to Claude Code (`claude` starts interactively without a `/login` prompt).
 - Drive from a scratch cwd outside the repo (the helper does this); never from the repo, where the cached installed copy is also enabled.
 - `RUN_ID` set for the run so evidence groups under `.claude/skills/verify-aileron/artifacts/<RUN_ID>/`.
-- `aileron-verify.sh doctor` reports one aileron plugin at this checkout's path and version, 44 slash commands, both agents.
+- `aileron-verify.sh doctor` reports one aileron plugin at this checkout's path and version, 54 slash commands, both agents.
 - Node ≥ 18 on PATH (for `scripts/sync-version.mjs`).
 
 ## Driving conventions
@@ -32,8 +32,10 @@ Each feature file has an H1, one paragraph of user-visible behavior, then four H
 
 ## Features
 
-- [aileron mode](./aileron-mode.md) covers `/aileron` as the entry point: todo list, principles read, playbook selection.
+- [aileron mode](./aileron-mode.md) covers `/aileron` as the entry point: playbook selection and its todo list.
 - [Skill invocation](./skill-invoke.md) covers any `/aileron:<skill>` expanding from this checkout and changing the answer.
 - [Hook nudge](./hook-nudge.md) covers the `UserPromptSubmit` hook firing on every prompt.
-- [Agents](./agents.md) covers registration and spawning of `aileron-agent` and `comment-sicko`.
+- [User-only skills](./user-only-skills.md) covers the skills that run only when typed: `ketchup`, `sharpen`, `correct`, `in-your-own-words`, `benchmark-checklist`, and the formal verification pair.
+- [Principles](./principles.md) covers the `principle-*` leaf skills, including `attack-the-premise`, `explain-the-number`, and `test-behavior-not-implementation`.
+- [Agents](./agents.md) covers registration and spawning of `aileron-agent` and `comment-sicko`, and `aileron-agent`'s delegate-only contract.
 - [Release version sync](./release-version-sync.md) covers the version bump propagating from `package.json` into both plugin manifests.
