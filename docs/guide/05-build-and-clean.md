@@ -56,7 +56,7 @@ In context, that's enough. [`/tdd`](../../skills/tdd/SKILL.md) writes the smalle
 
 ## Clean before you commit
 
-The [Opening a PR playbook](../../skills/aileron/playbooks/opening-a-pr.md) runs [`/unslop`](../../skills/unslop/SKILL.md) on the diff's prose and [`/no-comments`](../../skills/no-comments/SKILL.md) on its comments before each commit, and applies `/unslop` to the PR description and commit bodies. If the diff still feels padded, ask for the rest in plain words: remove unsupported guards, dead compatibility paths, and unrelated edits.
+The [Opening a PR playbook](../../skills/aileron/playbooks/opening-a-pr.md) runs [`/unslop`](../../skills/unslop/SKILL.md) on the diff's prose and [`/no-comments`](../../skills/no-comments/SKILL.md) on its comments before each commit, and `/aileron` applies `/unslop` to the PR description and commit bodies. If the diff still feels padded, ask for the rest in plain words: remove unsupported guards, dead compatibility paths, and unrelated edits.
 
 For prose, `/unslop` takes a target and any extra rules you have:
 
