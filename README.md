@@ -17,6 +17,8 @@ Fork it. Improve it. Make it yours. PRs are welcome!
 /plugin install aileron@aileron
 ```
 
+Claude Code leaves auto-update off for third-party marketplaces, so aileron stays on the version you installed. To turn it on, run `/plugin`, open the **Marketplaces** tab, select `aileron`, and choose **Enable auto-update**. To update once by hand, run `claude plugin update aileron@aileron`.
+
 For local development, run Claude Code from a checkout with `claude --plugin-dir .`.
 
 ## Release
@@ -32,7 +34,7 @@ Two steps:
 
 New here? The [aileron guide](./docs/guide/README.md) walks you through a first real task, from setup and prompting through verification and overnight runs.
 
-That's it. The other skills are situational, and the mode skill uses them for you as needed. Out of the box the mode splits work by role: precisely specified code goes to opus, prose and judgment go to fable, and bulk mechanical work goes to sonnet. The default panel is fable / opus / sonnet. [`/setup-aileron`](./skills/setup-aileron/SKILL.md) changes any of it.
+That's it. The other skills are situational, and the mode skill uses them for you as needed. Out of the box, code delegates (feature, refactoring, bug fix, perf, hillclimb), prose, and judgment go to opus at xhigh, and no role runs above xhigh. Outside a review panel, fable runs only when you name it or after two opus runs of the same brief fail. The default panel is fable / opus / sonnet. [`/setup-aileron`](./skills/setup-aileron/SKILL.md) changes any of it.
 
 ## Usage
 
@@ -40,7 +42,7 @@ Use [`/aileron`](./skills/aileron/SKILL.md) at the start of a task. It reads you
 
 ### Just use [`/aileron`](./skills/aileron/SKILL.md)
 
-This skill is the main shortcut. Use it whenever you need the agent to do rigorous engineering work. It comes with twenty-three playbooks:
+This skill is the main shortcut. Use it whenever you need the agent to do rigorous engineering work. It comes with twenty-two playbooks:
 
 ```
 /aileron this pr has a subtle bug where the scroll drifts every 750ms even when idle. repro
@@ -53,7 +55,7 @@ morning.
 ```
 
 <details>
-<summary>The twenty-three playbooks</summary>
+<summary>The twenty-two playbooks</summary>
 
 | Playbook | For |
 |---|---|
@@ -72,9 +74,8 @@ morning.
 | [Babysit](./skills/aileron/playbooks/babysit.md) | Drive a PR or a stack to merge-ready. Conflicts, review threads, CI. |
 | [Shipping](./skills/aileron/playbooks/shipping.md) | Independently verify a green stack, then land the contiguous verified run bottom-up through `gh`. |
 | [Autonomous run](./skills/aileron/playbooks/autonomous-run.md) | Drive a long task to completion without stopping. |
-| [Orchestrate](./skills/aileron/playbooks/orchestrate.md) | A standing project handed to one coordinator chat. Multi-day, many stacked PRs, fleets of subagents. |
 | [autopilot-full](./skills/aileron/playbooks/autopilot-full.md) | Run independent PRs to merged with one owner per PR. A swarm verifies each code-ready head, and every later change to the patch gets a fresh check. |
-| [autopilot-stack](./skills/aileron/playbooks/autopilot-stack.md) | Build and verify one linear base-branch stack for the operator to review and land. |
+| [autopilot-stack](./skills/aileron/playbooks/autopilot-stack.md) | Autopilot-full without the merge. Build and verify PRs for the operator to review and land, stacking a PR only on a PR it builds on. |
 | [Session pickup](./skills/aileron/playbooks/session-pickup.md) | Resume or take over a prior agent's in-flight work. |
 | [Pause safely](./skills/aileron/playbooks/pause-safely.md) | Suspend in-flight work cleanly so it can be resumed later. |
 | [Multi-phase plan](./skills/aileron/playbooks/multi-phase-plan.md) | Work that spans phases or stacked PRs. |
@@ -97,7 +98,7 @@ Claude Code's plan mode works with aileron too. If you want a plan, [`/aileron`]
 
 ## Skills
 
-[`/aileron`](./skills/aileron/SKILL.md) runs most of these for you when a step needs them (`how`, `why`, `architect`, `arena`, `swarm`, `interrogate`, `unslop`, `no-comments`, `technical-writing`, `tdd`, and the principles). The table below is for when you want one directly:
+[`/aileron`](./skills/aileron/SKILL.md) runs most of these for you when a step needs them (`why`, `architect`, `arena`, `swarm`, `interrogate`, `unslop`, `no-comments`, `technical-writing`, `tdd`, and the principles). The table below is for when you want one directly:
 
 ```
 /how do we cancel runs? do we have an n+1 when we look up every run to cancel?
@@ -116,16 +117,17 @@ Every skill is also reachable with the plugin prefix, as `/aileron:<skill>`, whe
 |---|---|
 | [`/aileron`](./skills/aileron/SKILL.md) | Default entry point for any non-trivial task. |
 | [`/in-your-own-words`](./skills/in-your-own-words/SKILL.md) | You want the agent to play back your goal and the problem before it starts. Runs only when you type `/in-your-own-words`. |
-| [`/sharpen`](./skills/sharpen/SKILL.md) | You want a prompt made deeper, not bigger, before you send it. Adds what a top professional would do that you didn't ask for, the raw material they'd start from, their methods and tools, and an outside check that the result is right. Hands back the rewritten prompt and leaves your choices open. Doesn't do the task. Runs only when you type `/sharpen`. |
+| [`/sharpen`](./skills/sharpen/SKILL.md) | You want a prompt made deeper, not bigger, before you send it. Adds what a top professional would do that you didn't ask for, the raw material they'd start from, their methods and tools, and an outside check that the result is right. Hands back the rewritten prompt, which asks the agent to prototype any choice an experiment can settle and leaves product and preference choices to you. Doesn't do the task. Runs only when you type `/sharpen`. |
 | [`/how`](./skills/how/SKILL.md) | You want a walkthrough of how a subsystem works. |
-| [`/why`](./skills/why/SKILL.md) | You want to know why something was built this way. Discovers available MCPs at run time and queries each evidence category in parallel (source control, issue tracker, long-form docs, real-time chat, infra observability, error tracking, analytics warehouse). |
+| [`/why`](./skills/why/SKILL.md) | You want to know why something was built this way. Answers from the record, not the code. Reads the commits and PR discussions that introduced it and each later change, and other sources when that trail is thin. Cites what the authors wrote, marks its own inferences, and says what the record does not answer. |
 | [`/recall`](./skills/recall/SKILL.md) | You're starting or resuming work and want your recent context on a topic rebuilt from your own chat history and the shared record, handed back as a tight current-state brief. |
 | [`/ketchup`](./skills/ketchup/SKILL.md) | You want what changed in this chat since your last message, in plain words and small visuals, with every item waiting on you listed and decidable from the reply alone, even when that makes the reply long. |
+| [`/ketchup-video`](./skills/ketchup-video/SKILL.md) | You want the `/ketchup` catch-up as a short subtitled video of slides, with the calls waiting on you as text under it. |
 | [`/blast-radius`](./skills/blast-radius/SKILL.md) | You have a small-looking change and want to know what else it could break, with the one fact it's safe because of proven by running code, not asserted. |
 | [`/architect`](./skills/architect/SKILL.md) | You're about to write code that crosses a function boundary and want the caller's usage, types, and module shape settled first. |
 | [`/arena`](./skills/arena/SKILL.md) | You want N parallel attempts at the same thing, then to grab the best parts of each. |
 | [`/swarm`](./skills/swarm/SKILL.md) | You want N parallel workers across different slices or races, then one aggregated report. |
-| [`/interrogate`](./skills/interrogate/SKILL.md) | You have a diff and want several reviewers with distinct lenses to try to break it, including a strict code-quality lens. |
+| [`/interrogate`](./skills/interrogate/SKILL.md) | You have a diff and want different models to try to break it, keeping only findings a run proves. |
 | [`/automate-me`](./skills/automate-me/SKILL.md) | You want your own `-mode` skill, drafted from how you've actually worked. |
 | [`/setup-aileron`](./skills/setup-aileron/SKILL.md) | You want to pick which models aileron uses per role and at what reasoning budget. Writes `~/.claude/aileron-models.md`. |
 | [`/reflect`](./skills/reflect/SKILL.md) | A long task landed and you want the recipe captured as a skill edit. |
@@ -141,6 +143,7 @@ Every skill is also reachable with the plugin prefix, as `/aileron:<skill>`, whe
 | [`/maintain-verification-skill`](./skills/maintain-verification-skill/SKILL.md) | Your verify skill's feature map has drifted from the app. Source wave + one live pass, at most one PR of proven corrections. |
 | [`/create-formal-verification-skill`](./skills/create-formal-verification-skill/SKILL.md) | Tests can't reach the case that breaks a race, retry, state machine, parser, or unsafe code. Verifies one property with the tool that fits and generates a project-local skill to recheck it on every change. |
 | [`/maintain-formal-verification-skill`](./skills/maintain-formal-verification-skill/SKILL.md) | Code your formal verification covers has changed since it was last checked. Updates the model, harness, or properties to match the code, reruns, and says whether each failure is drift in the verification or a bug in the code. |
+| [`/statechart`](./skills/statechart/SKILL.md) | Someone who owns the behavior needs to see it, not read a spec. Checks a TLA+ model, draws what the user sees as a Mermaid statechart, marks each state that breaks a rule, and gives the shortest path to each one. |
 | [`/unslop`](./skills/unslop/SKILL.md) | You're cleaning up writing. Removes AI tells. |
 | [`/bro`](./skills/bro/SKILL.md) | You want the last message restated in plain human language, no jargon. |
 | [`/technical-writing`](./skills/technical-writing/SKILL.md) | Layered doc standard (Diátaxis + Google developer style + STE + Global English) for docs, RFCs, readmes, PR descriptions, commit messages. |
@@ -198,6 +201,8 @@ automate-me:       /automate-me
 
 aileron also ships [`subagent_type: "aileron-agent"`](./agents/aileron-agent.md) as the wrapper for delegates spawned during a run. It reads `aileron` in full, including its inline principles index, before doing any work. Substituting `general-purpose` skips that read and drifts. Do not spawn `aileron-agent` to run the playbook itself.
 
+Every agent a run starts reads [`worker.md`](./skills/aileron/worker.md) before anything else. It holds the worker to the bar in its kickoff, has it decide reversible calls instead of asking you, and has it open PRs ready for review.
+
 aileron also ships [Comment Sicko](./agents/comment-sicko.md), a read-only comment reviewer available as `subagent_type: "comment-sicko"`. Usually invoke it through [`/no-comments`](./skills/no-comments/SKILL.md), not directly.
 
 ## Principles
@@ -250,22 +255,26 @@ The defaults:
 
 | Role | Default |
 |---|---|
-| Code (precisely specified changes) | `opus` |
-| Judgment and prose | `fable` |
-| Bulk mechanical work | `sonnet` |
-| Panels (arena runners, cross-judges, interrogate reviewers, swarm workers) | `fable`, `opus`, `sonnet` |
+| Code, prose, and judgment (`code`, `judgment and prose`, `feature, refactoring`, `bug-fix`, `perf-issue`, `hillclimb`) | `opus@xhigh` |
+| Trivial mechanical edits and swarm workers (`bulk`, `swarm workers`) | `opus@high` |
+| Review panels (`arena runners`, `interrogate reviewers`) | `fable@high`, `opus@high`, `sonnet@high`, one seat each |
+| Arena judge (`arena cross-judge pool`) | `fable@high`, `opus@high`, `sonnet@high`. Arena takes the first entry whose tier differs from the session's. |
 
-Each line in the file is `role: tier`. Valid tiers are `fable`, `opus`, `sonnet`, `haiku`, and `inherit`. A role set to `inherit` runs on the parent session's model.
+Outside a review panel, fable runs only when you name it for a task or after two `opus@xhigh` runs of the same brief fail their check. Difficulty alone never sends a task to fable.
 
-Reasoning effort is optional. [`/setup-aileron`](./skills/setup-aileron/SKILL.md) asks for a budget and writes it as a `budget: <effort>` line, the default effort for every role. Any entry can override it with an `@effort` suffix, as in `opus@high`. Effort is one of `low`, `medium`, `high`, `xhigh`, or `max`. With neither set, aileron passes no effort.
+Each line in the file is `role: entry`, and a panel role takes a comma-separated list of entries. An entry is a tier with an optional `@effort` suffix, as in `opus@high`. Valid tiers are `fable`, `opus`, `sonnet`, `haiku`, and `inherit`. A role set to `inherit` runs on the parent session's model. Effort is one of `low`, `medium`, `high`, or `xhigh`. No role runs above `xhigh`.
 
-When a default changes, a file written before the change still pins the old default. Delete those role lines, or delete the file, then run `/setup-aileron` again.
+[`/setup-aileron`](./skills/setup-aileron/SKILL.md) also asks for a reasoning budget. `large` keeps each default's effort, `medium` lowers it one step, and `small` lowers it two steps, on the ladder `xhigh`, `high`, `medium`, `low`. A smaller budget spends fewer tokens.
+
+When a default changes, a file written before the change still pins the old default until you run `/setup-aileron` again. That run replaces the old defaults it recognizes and keeps any other role whose tier differs from the default. To drop a pin it does not recognize, delete that role's line or the file first.
 
 ## Credits
 
 aileron is a fork of poteto's [pstack](https://github.com/cursor/plugins/tree/main/pstack), adapted and extended for Claude Code. MIT.
 
-Last synced with pstack at [`88d4751`](https://github.com/cursor/plugins/commit/88d4751) (2026-10-19).
+Last synced with pstack at [`2f87c85`](https://github.com/cursor/plugins/commit/2f87c85) (2026-11-16).
+
+To sync again, run `node scripts/sync-pstack.mjs <cursor/plugins checkout> <last synced sha> <target ref>`, which three-way merges each upstream change into this tree. Resolve the conflict markers it leaves, then run `npm run check`.
 
 ## License
 

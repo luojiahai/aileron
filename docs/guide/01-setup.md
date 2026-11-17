@@ -23,9 +23,9 @@ Run:
 
 [`/setup-aileron`](../../skills/setup-aileron/SKILL.md) asks for a reasoning budget, shows you each role (code delegates, judgment, the review panels) with its default, and asks what you want. Answer the questions. It writes `~/.claude/aileron-models.md`, a small markdown file every aileron skill reads by path.
 
-The budget is an effort level, one of `low`, `medium`, `high`, `xhigh`, or `max`. Setup writes it as a `budget:` line, and it becomes the default effort for every role. A single entry can override it with an `@effort` suffix, as in `opus@high`. With no budget and no suffix, aileron passes no effort. A lower effort spends fewer tokens.
+The defaults are the same as the `large` budget. Code, prose, and judgment run on `opus@xhigh`. Trivial mechanical edits and swarm workers run on `opus@high`. The review panels run one seat each on `fable@high`, `opus@high`, and `sonnet@high`. No role runs above `xhigh`. Outside a review panel, fable runs only when you name it for a task or after two `opus@xhigh` runs of the same brief fail their check. `medium` lowers each role one level and `small` lowers it two, and both spend fewer tokens. A single entry can set its own effort with an `@effort` suffix, as in `opus@high`.
 
-You only override what you care about. A role with no line in the file keeps the skill's default. The built-in defaults are `opus` for code, `fable` for prose and judgment, `sonnet` for bulk mechanical work, and a `[fable, opus, sonnet]` panel for the review roles. To restore a default later, delete that role's line, or just run `/setup-aileron` again. If the file is missing entirely, every skill falls back to its defaults. When a default changes, a file written before the change still pins the old default, so delete those role lines, or delete the file, then run `/setup-aileron` again.
+You only override what you care about. A role with no line in the file keeps the skill's default. To restore a default, delete that role's line. If the file is missing entirely, every skill falls back to its defaults. A rerun of `/setup-aileron` keeps any role whose tier differs from the default. When a default changes, a file written before the change still pins the old default until you run `/setup-aileron` again. That run replaces the old defaults it recognizes, tells you which, and keeps your other choices. To drop a pin it does not recognize, delete that role's line or the file first.
 
 You might be wondering how to keep a role on whatever model the session is using. Set it to `inherit` and aileron omits the subagent `model` field, so the subagent runs on your session model. `inherit` is not a model slug. For a panel role the value is a list, and one subagent runs per entry, so the list length sets the panel size. Setup also configures `swarm workers`, the default model for every `/swarm` worker unless a race names a model for each arm.
 
@@ -58,7 +58,7 @@ Pick something real but small, and describe it the way you'd describe it to a co
 /aileron add a --json flag to this command. text output stays byte-identical. verify both.
 ```
 
-Watch the todo list. Its first items are the matched playbook's steps copied in, the Feature playbook for this prompt. If `/aileron` skips a step, the step stays in the list with `skip: <reason>`, so you can see what it chose not to do.
+Watch the todo list. Its first items are the matched playbook's steps copied in, the Feature playbook for this prompt.
 
 From here you can type normal follow-ups. `/aileron` is sticky. It stays on for the session until you opt out by saying so.
 
