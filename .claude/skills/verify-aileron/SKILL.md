@@ -5,7 +5,7 @@ description: "Launch and drive the aileron Claude Code plugin from this checkout
 
 # Verify aileron
 
-aileron is a Claude Code plugin: 54 skills under `skills/`, two agents under `agents/`, one `UserPromptSubmit` hook in `hooks/hooks.json`, manifests in `.claude-plugin/`. There is no server or UI. The "app" is Claude Code with this checkout loaded via `--plugin-dir`, and the user surface is slash commands (`/aileron:<skill>`), the hook nudge on every prompt, and the agents. Secondary surface: the release scripts (`scripts/sync-version.mjs`, changesets).
+aileron is a Claude Code plugin: 56 skills under `skills/`, two agents under `agents/`, one `UserPromptSubmit` hook in `hooks/hooks.json`, manifests in `.claude-plugin/`. There is no server or UI. The "app" is Claude Code with this checkout loaded via `--plugin-dir`, and the user surface is slash commands (`/aileron:<skill>`), the hook nudge on every prompt, and the agents. Secondary surface: the release scripts (`scripts/sync-version.mjs`, changesets).
 
 Everything below runs through one helper, `scripts/aileron-verify.sh`. Read `features/README.md` for the map before driving.
 
