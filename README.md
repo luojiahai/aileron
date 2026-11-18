@@ -274,7 +274,7 @@ aileron is a fork of poteto's [pstack](https://github.com/cursor/plugins/tree/ma
 
 Last synced with pstack at [`2f87c85`](https://github.com/cursor/plugins/commit/2f87c85) (2026-11-16).
 
-To sync again, run `node scripts/sync-pstack.mjs <cursor/plugins checkout> <last synced sha> <target ref>`, which three-way merges each upstream change into this tree. Resolve the conflict markers it leaves, then run `npm run check`.
+To sync again, follow the project's [sync-pstack skill](./.claude/skills/sync-pstack/SKILL.md). Its script, `.claude/skills/sync-pstack/scripts/sync-pstack.mjs`, three-way merges each upstream change into this tree and renames the Cursor names that have one aileron spelling. The skill covers resolving the conflicts it leaves, the translation table, and the checks.
 
 ## License
 
