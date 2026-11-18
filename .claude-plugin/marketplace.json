@@ -10,7 +10,7 @@
       "source": "./",
       "description": "Rigorous agentic engineering workflows for Claude Code.",
       "displayName": "aileron",
-      "version": "0.2.0"
+      "version": "0.3.0"
     }
   ]
 }
