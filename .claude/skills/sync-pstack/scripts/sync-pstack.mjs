@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 // Three-way merges upstream pstack changes into aileron. Usage:
-//   node scripts/sync-pstack.mjs <cursor/plugins checkout> <base sha> <target ref>
+//   node .claude/skills/sync-pstack/scripts/sync-pstack.mjs <cursor/plugins checkout> <base sha> <target ref>
 // base is the commit the last sync reached (README.md "Last synced"). Each file pstack changed between base and target
 // is mapped to its aileron path and merged with git merge-file, leaving conflict markers to resolve by hand. Content is
 // not translated: Cursor names in merged or added text are caught afterwards by npm run check.
@@ -12,7 +12,7 @@ import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
-const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
+const ROOT = join(dirname(fileURLToPath(import.meta.url)), "../../../..");
 const [upstream, base, target] = process.argv.slice(2);
 if (!upstream || !base || !target) {
   console.error("usage: sync-pstack.mjs <cursor/plugins checkout> <base sha> <target ref>");
